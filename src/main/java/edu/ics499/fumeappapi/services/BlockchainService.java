@@ -1,8 +1,13 @@
 package edu.ics499.fumeappapi.services;
 
 import edu.ics499.fumeappapi.domain.Block;
+import edu.ics499.fumeappapi.domain.Blockchain;
+import edu.ics499.fumeappapi.domain.Hash;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class BlockchainService {
 
