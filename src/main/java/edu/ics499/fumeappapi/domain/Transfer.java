@@ -7,7 +7,7 @@ public class Transfer {
     private NodeList userList;
     private Calendar date;
     private String message, userName, pin, networkID, Connection, filePath;
-    private File file;
+    private FileTransfer file;
     private Node node;
     private int port;
 
@@ -36,11 +36,11 @@ public class Transfer {
     /**
      * @return the file
      */
-    public File getFile() {return file;}
+    public FileTransfer getFile() {return file;}
     /**
      * @param file the file to set
      */
-    public File setFile(File file) {return this.file = file;}
+    public FileTransfer setFile(FileTransfer file) {return this.file = file;}
     /**
      * @return the pin
      */
