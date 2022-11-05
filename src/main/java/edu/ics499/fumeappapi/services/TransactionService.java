@@ -1,15 +1,18 @@
 package edu.ics499.fumeappapi.services;
 
+import edu.ics499.fumeappapi.domain.FileTransfer;
 import edu.ics499.fumeappapi.domain.Node;
 import edu.ics499.fumeappapi.domain.User;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Calendar;
 
 public class TransactionService {
     private static final long serialVersionUID = 1L;
     private NodeListService userList;
     private Calendar date;
     private String message, userName, pin, networkID, Connection, filePath;
-    private File file;
+    private FileTransfer file;
     private Node node;
     private int port;
     private static Transaction transaction;
