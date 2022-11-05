@@ -9,7 +9,7 @@ public class NodeListService {
 
     private List <User> ledger;
     private List<String> blocks;
-    private MessagingService messaging;
+    private MessageService messaging;
 
     /**
      *
