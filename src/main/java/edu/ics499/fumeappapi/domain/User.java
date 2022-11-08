@@ -3,7 +3,6 @@ package edu.ics499.fumeappapi.domain;
 /**
  * 
  */
-package edu.ics499.fume.entities;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -79,8 +78,4 @@ public class User extends Node{
 		User user = (User) userObject;
 		return getUserName().equalsIgnoreCase(user.getUserName());
 	}
-
-
-	
-
 }

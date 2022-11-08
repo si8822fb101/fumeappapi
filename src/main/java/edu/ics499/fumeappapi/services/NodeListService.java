@@ -1,19 +1,39 @@
 package edu.ics499.fumeappapi.services;
 
-import edu.ics499.fumeappapi.domain.User;
+import edu.ics499.fumeappapi.domain.*;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Service
 public class NodeListService {
+    private List <User> ledger = new ArrayList<User>();
+    private List<String> blocks = new ArrayList<String>();
+    private Node head;
+    private Message message;
+    private int count;
 
-    private List <User> ledger;
-    private List<String> blocks;
-    private MessagingService messaging;
+    /**
+     * @return the count
+     */
+    public int getCount() {
+        return count;
+    }
+    /**
+     * @param count the count to set
+     */
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public Iterator<User> iterator(){
+        return ledger.iterator();
+    }
 
     /**
      *
-     * @param dataBlock
      * Node - is added to the chain
      * @return
      */
@@ -29,11 +49,9 @@ public class NodeListService {
 
     /**
      *
-     * @param dataBlock
-     * Node - is removed from the chain
+     * @param device
      * @return
      */
-
     public boolean remove(Node device) {
         for(int i = 0; i <= ledger.size(); i++) {
             if(ledger.contains(device)) {
@@ -45,36 +63,28 @@ public class NodeListService {
         return false;
     }
 
-    public User searchId(String userId) {
+    public boolean searchId(String userId) {
         for(Iterator<User> iterator = ledger.iterator(); iterator.hasNext();) {
             User user = iterator.next();
-            if (user.getUserName().equals(userId)) {
-                return user;
-            }
-
+            if(user.getUserName().equals(userId)) return true;
         }
-        return null;
+        return false;
     }
 
-    public String searchNetwork(String netId) {
-        for(int i = 0; i <= ledger.size(); i++) {
-            if(ledger.get(i).getNetworkID().equals(netId)){
-                return netId;
-            }
-        }
-        return null;
-    }
 
-    public void p2pMessaging(String destination, String message) {
+
+    public void p2pMessaging(String destination, int portValue) {
         for(Iterator<User> iterator = ledger.iterator(); iterator.hasNext();) {
             User user = iterator.next();
             if(user.getIpAddress().equals(destination)) {
-                messaging.messaging(destination, message);
+                message.setConnection(destination);
+                message.setPort(portValue);
+                message.messaging();
             }
         }
     }
 
-    public void p2pFileTransfer(String destination, Object data) throws Exception {
+    public void p2pFileTransfer(String destination) throws Exception {
         for(Iterator<User> iterator = ledger.iterator(); iterator.hasNext();) {
             User user = iterator.next();
             if(user.getIpAddress().equals(destination)) {
@@ -83,5 +93,36 @@ public class NodeListService {
         }
     }
 
+    public void consensus(String destination, String data) {
+        double threshold = 0.95;
+        double confirm = 0;
+        boolean sentinel = false;
+        for(Iterator<String> iterator = blocks.iterator(); iterator.hasNext();) {
+            String block = iterator.next();
+            if(block.matches(data)) sentinel = true;
+            double sentinelCount = sentinel ? 1 : 0;
+
+            if(sentinelCount == 1) confirm = confirm + 1;
+            double yield = (confirm / blocks.size());
+
+            if(yield >= threshold) addToChain(convertToBlock(data));
+
+        }
+
+    }
+
+    private String convertToBlock(String data) {
+        return Hash.hashCreation(data);
+    }
+
+    private void addToChain(String block) {
+        blocks.add(block);
+    }
+
+
+
+    public void wipeNodes() {
+        ledger.clear();
+    }
 
 }

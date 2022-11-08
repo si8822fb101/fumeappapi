@@ -3,7 +3,6 @@ package edu.ics499.fumeappapi.domain;
 /**
  * 
  */
-package edu.ics499.fume.entities;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
