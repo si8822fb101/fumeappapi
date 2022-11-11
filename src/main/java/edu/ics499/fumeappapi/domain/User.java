@@ -5,6 +5,7 @@ package edu.ics499.fumeappapi.domain;
  */
 
 import java.io.IOException;
+import java.net.*;
 import java.util.Calendar;
 
 /**
@@ -12,18 +13,24 @@ import java.util.Calendar;
  * 
  * USER- Represents a user profile
  */
-public class User extends Node{
-	private String userName, pin;
+public class User{
+	private String userName, pin, macAddress, ipAddress;
 	private Calendar userCreateDate;
+	private boolean active;
 
-	
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 
 	public User(String userName, String pin) throws IOException {
 		super();
 		this.userName = userName;
 		this.setPin(pin);
 		this.userCreateDate = Calendar.getInstance();
-	
 	}
 	
 	/**
@@ -69,9 +76,48 @@ public class User extends Node{
 	}
 	
 	/**
-	 *  Overriding java equals method - custom created
+	 * @return the macAddress
 	 */
-	
+	public String getMacAddress() {
+		return macAddress;
+	}
+
+
+	/**
+	 * @throws UnknownHostException
+	 * @throws SocketException
+	 */
+	public void setMacAddress() throws UnknownHostException, SocketException {
+		InetAddress localHost = InetAddress.getLocalHost();
+		NetworkInterface nic = NetworkInterface.getByInetAddress(localHost);
+		byte[] hardwareAddress = nic.getHardwareAddress();
+
+		String[] hex = new String[hardwareAddress.length];
+		for(int i = 0; i < hardwareAddress.length; i++) {
+			hex[i] = String.format("%02X", hardwareAddress[i]);
+		}
+		macAddress = String.join("-", hex);
+	}
+
+
+	/**
+	 * @return the ipAddress
+	 */
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+
+	/**
+	 * @throws IOException
+	 */
+	public void setIpAddress() throws IOException {
+		try (final DatagramSocket datagramSocket = new DatagramSocket()) {
+			datagramSocket.connect(InetAddress.getByName("8.8.8.8"), 12345);
+			ipAddress = datagramSocket.getLocalAddress().getHostAddress();
+		}
+	}
+
 	public boolean equals(Object userObject) {
 		if (this == userObject) return true;
 		if(userObject == null || getClass() != userObject.getClass()) return false;

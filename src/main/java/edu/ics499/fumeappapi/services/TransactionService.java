@@ -24,42 +24,37 @@ public class TransactionService {
     @Autowired
     private NodeListService nodeListService;
 
-    public Node createAccount(String username, String pin) throws IOException {
-//        edu.ics499.fume.facade.Result result = new edu.ics499.fume.facade.Result();
-        Node user = new User(username, pin);
+    public User createAccount(String username, String pin) throws IOException {
+        User user = new User(username, pin);
+        user.setActive(true);
         nodeListService.insert(user);
-//        if(validationService.validationCheck(username, pin)) {
-//        }
         return user;
     }
 
-//    public Result userLogon(Request request) throws IOException {
-//        edu.ics499.fume.facade.Result result = new edu.ics499.fume.facade.Result();
-//        Node user = new User(request.getUserName(), request.getPin());
-//        for(int i = 0; i <= userList.getCount(); i++) {
-//            if(userList.searchId(request.getUserName())) {
-//                result.setResultCode(edu.ics499.fume.facade.Result.USER_NAME_UNAVAILABLE);
-//                return result;
-//            }
-//            userList.insert(user);
-//            result.setResultCode(edu.ics499.fume.facade.Result.USER_ONLINE);
-//        }
-//        return result;
-//    }
-//
-//    public edu.ics499.fume.facade.Result userLogout(Request request) throws IOException {
-//        edu.ics499.fume.facade.Result result = new edu.ics499.fume.facade.Result();
-//        Node user = new User(request.getUserName(), request.getPin());
-//        for(int i = 0; i <= userList.getCount(); i++) {
-//            if(userList.searchId(request.getUserName())) {
-//                userList.remove(user);
-//                result.setResultCode(edu.ics499.fume.facade.Result.USER_OFFLINE);
-//            }
-//        }
-//        return result;
-//    }
-//
-//
+    public boolean userLogon(String username, String pin) throws IOException {
+        User user = new User(username, pin);
+        user.setActive(true);
+        var found = nodeListService.searchId(username);
+        if(found){
+            nodeListService.insert(user);
+        }
+        return found;
+    }
+
+    public boolean userLogout(String username) throws IOException {
+        for(int i = 0; i <= nodeListService.getCount(); i++) {
+            var user = new User(username, "12345");
+            if(nodeListService.searchId(username)) {
+                user.setActive(false);
+                return true;
+            }else{
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 //    public edu.ics499.fume.facade.Result messaging(Request request) {
 //        edu.ics499.fume.facade.Result result = new edu.ics499.fume.facade.Result();
 //

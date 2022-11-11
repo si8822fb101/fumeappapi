@@ -11,7 +11,7 @@ import java.util.List;
 public class NodeListService {
     private List <User> ledger = new ArrayList<User>();
     private List<String> blocks = new ArrayList<String>();
-    private Node head;
+    private User head;
     private Message message;
     private int count;
 
@@ -19,7 +19,7 @@ public class NodeListService {
      * @return the count
      */
     public int getCount() {
-        return count;
+        return ledger.size();
     }
     /**
      * @param count the count to set
@@ -38,13 +38,9 @@ public class NodeListService {
      * @return
      */
 
-    public boolean insert(Node device) {
-        if(device != null) {
-            ledger.add((User) device);
-            device = head;
-            setCount(getCount() + 1);
-        }
-        return(ledger.add((User) device));
+    public boolean insert(User device) {
+        head = device;
+        return(ledger.add(device));
     }
 
     /**
@@ -52,7 +48,7 @@ public class NodeListService {
      * @param device
      * @return
      */
-    public boolean remove(Node device) {
+    public boolean remove(User device) {
         for(int i = 0; i <= ledger.size(); i++) {
             if(ledger.contains(device)) {
                 ledger.remove(device);
