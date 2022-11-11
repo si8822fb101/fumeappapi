@@ -2,8 +2,6 @@ package edu.ics499.fumeappapi.domain;
 /**
  * 
  */
-package edu.ics499.fume.entities;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

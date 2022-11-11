@@ -3,7 +3,6 @@ package edu.ics499.fumeappapi.domain;
 /**
  * 
  */
-package edu.ics499.fume.entities;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -20,13 +19,6 @@ import java.net.UnknownHostException;
  */
 public class Node{
 	private String macAddress, ipAddress; 
-	
-
-	public Node() throws IOException {
-		this.setMacAddress();
-		this.setIpAddress();
-	}
-
 
 	/**
 	 * @return the macAddress
@@ -37,7 +29,6 @@ public class Node{
 
 
 	/**
-	 * @param macAddress the macAddress to set
 	 * @throws UnknownHostException 
 	 * @throws SocketException 
 	 */
@@ -63,7 +54,6 @@ public class Node{
 
 
 	/**
-	 * @param ipAddress the ipAddress to set
 	 * @throws IOException 
 	 */
 	public void setIpAddress() throws IOException {

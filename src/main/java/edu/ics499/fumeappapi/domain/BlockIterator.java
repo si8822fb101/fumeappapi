@@ -1,10 +1,8 @@
-package edu.ics499.fume.iterator;
+package edu.ics499.fumeappapi.domain;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
-
-import edu.ics499.fume.entities.Block;
 
 public class BlockIterator implements Iterator<Block> {
 	private Block block;

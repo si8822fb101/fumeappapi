@@ -2,17 +2,12 @@ package edu.ics499.fumeappapi.domain;
 /**
  * 
  */
-package edu.ics499.fume.collections;
 
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-
-import edu.ics499.fume.entities.Block;
-import edu.ics499.fume.hash.Hash;
-
 
 
 

@@ -1,9 +1,18 @@
 package edu.ics499.fumeappapi.services;
 
 import edu.ics499.fumeappapi.domain.Block;
+import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.LinkedList;
+import java.util.Queue;
 
+@Service
 public class BlockchainService {
 
     public static Block treeGenerator(ArrayList<Block> blocks) throws IOException {
@@ -28,7 +37,7 @@ public class BlockchainService {
                     right = new Block(null, null, left.getHash());
                 }
 
-                String vertexHash = Hash.hashCreation(left.getHash() + right.getHash());
+                String vertexHash = hashCreation(left.getHash() + right.getHash());
                 vertexs.add(new Block(left, right, vertexHash));
                 index +=2;
 
@@ -59,4 +68,16 @@ public class BlockchainService {
 
     }
 
+    public static String hashCreation(Object input) {
+        String encodedData = "";
+        try {
+            MessageDigest digest = MessageDigest.getInstance("Sha-256");
+            byte[] hashArray = digest.digest(((String) input).getBytes(StandardCharsets.UTF_8));
+            encodedData = Base64.getEncoder().encodeToString(hashArray);
+        } catch (NoSuchAlgorithmException e) {
+        }
+
+        return new String(encodedData);
+
+    }
 }
