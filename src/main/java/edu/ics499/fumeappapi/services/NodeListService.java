@@ -3,6 +3,7 @@ package edu.ics499.fumeappapi.services;
 import edu.ics499.fumeappapi.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -69,13 +70,23 @@ public class NodeListService {
 
 
 
-    public void p2pMessaging(String destination, int portValue) {
+    public void p2pMessageSend(String destination, int portValue) throws IOException {
         for(Iterator<User> iterator = ledger.iterator(); iterator.hasNext();) {
             User user = iterator.next();
             if(user.getIpAddress().equals(destination)) {
-                message.setConnection(destination);
-                message.setPort(portValue);
-                message.messaging();
+                MessagingService.setConn(destination);
+                MessagingService.setPort(portValue);
+                MessagingService.sendMessage();
+            }
+        }
+    }
+
+    public void p2pMessageReceive(String destination, int portValue) throws IOException {
+        for (User user : ledger) {
+            if (user.getIpAddress().equals(destination)) {
+                MessagingService.getConn();
+                MessagingService.getPort();
+                MessagingService.receiveMessage();
             }
         }
     }

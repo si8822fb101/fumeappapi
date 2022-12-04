@@ -1,22 +1,19 @@
 package edu.ics499.fumeappapi.domain;
-/**
- * 
- */
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.util.Calendar;
 
-/**
- * @author marselos a. reed, qaalib farah, john quinlan, ayden sinn, mohamed mahmoud
- * 
- *
- */
 public class Message  {
-	private String connection = "";
-	private int port;
+	private static String connection = "";
+	private static int port;
+	private static Calendar timeStamp;
 	
 	
 	
@@ -36,27 +33,16 @@ public class Message  {
 	/**
 	 * @param port the port to set
 	 */
-	public void setPort(int port) {this.setPort(port);;}
+	public void setPort(int port) {this.setPort(port);};
 
+	public Calendar getTimeStamp() {return timeStamp;};
 
+	public void  setTimeStamp(Calendar timeStamp) {this.setTimeStamp(Calendar.getInstance());};
 
-	public void messaging() {
-		try (Socket echo = new Socket(connection, port);
-				PrintWriter send = new PrintWriter(echo.getOutputStream(), true);
-				BufferedReader receive = new BufferedReader(new InputStreamReader(echo.getInputStream()));
-				BufferedReader input = new BufferedReader(new InputStreamReader(System.in))
-				){
-				String message;
-				while((message = input.readLine()) != null) {
-					send.println(message);
-					System.out.println(receive.readLine());			}
-			} catch (UnknownHostException e) {
-				System.err.println();
-			} catch (IOException e) {
-				System.err.println();
-			}
-			
-			
+	public Message(String connection, int port){
+		connection = this.connection;
+		port = this.port;
+		timeStamp = Calendar.getInstance();
 	}
 
 

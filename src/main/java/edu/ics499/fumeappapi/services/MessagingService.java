@@ -8,24 +8,51 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class MessagingService {
-    private static String connection = "";
+    private static String conn = "";
     private static int port;
 
-    public static void messaging(String destination, String message) {
-        try (Socket echo = new Socket(connection, port);
-             PrintWriter send = new PrintWriter(echo.getOutputStream(), true);
-             BufferedReader receive = new BufferedReader(new InputStreamReader(echo.getInputStream()));
-             BufferedReader input = new BufferedReader(new InputStreamReader(System.in))
-        ){
-            while((message = input.readLine()) != null) {
-                send.println(message);
-                System.out.println(receive.readLine());			}
-        } catch (UnknownHostException e) {
-            System.err.println();
-        } catch (IOException e) {
-            System.err.println();
+
+    /**
+     * @return the connection
+     */
+    public static String getConn() {return conn;}
+    /**
+     * @param conn the connection to set
+     */
+    public static void setConn(String conn) {MessagingService.setConn(conn);;}
+
+    /**
+     * @return the port
+     */
+    public static int getPort() {return port;}
+    /**
+     * @param port the port to set
+     */
+    public static void setPort(int port) {MessagingService.setPort(port);};
+
+
+    public static void sendMessage() throws IOException {
+        Socket echo = new Socket(conn, port);
+        PrintWriter send = new PrintWriter(echo.getOutputStream(), true);
+        BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
+
+        String message;
+        while((message = userInput.readLine()) != null){
+            send.println(message);
+        }
+    }
+
+    public static void receiveMessage() throws IOException {
+        Socket echo = new Socket(conn, port);
+        BufferedReader dataReceive = new BufferedReader(new InputStreamReader(echo.getInputStream()));
+        BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
+
+        String messageToReceive;
+        while((messageToReceive = userInput.readLine())!= null){
+            System.out.println(dataReceive.readLine());
         }
 
     }
+
 
 }
