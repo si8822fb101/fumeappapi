@@ -1,8 +1,12 @@
 package edu.ics499.fumeappapi.domain;
 
+import edu.ics499.fumeappapi.services.TransactionService;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Objects;
 
 
 /**
@@ -10,34 +14,18 @@ import java.util.Calendar;
  *
  */
 public class Transaction implements Serializable {
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
-	private NodeList userList;
 	private Calendar date;
-	private String message, userName, pin, networkID, Connection, filePath;
+	private String from, to, pin;
+	private Message message;
 	private File file;
-	private Node node;
-	private int port;
-	private static Transaction transaction;
 
-//	private Transaction() {
-//		userList = NodeList.getInstance();
-//	}
-//
-//	public static Transaction getInstance() {
-//		try {
-//			if (transaction == null) {
-//
-//				return transaction = new Transaction();
-//			} else {
-//				return transaction;
-//			}
-//		} catch (Exception e) {
-//			return null;
-//		}
-//	}
+	public Transaction(){
+		Date date = new Date();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		this.setDate(calendar);
+	}
 
     public String getDate() {
         return date.get(Calendar.MONTH) + "/" + date.get(Calendar.DATE) + "/"
@@ -48,83 +36,56 @@ public class Transaction implements Serializable {
 	 */
 	public void setDate(Calendar date) {this.date = date;}
 
-	/**
-	 * @param message the message to set
-	 */
+	public String getPin() {
+		return pin;
+	}
 
-	/**
-	 * @return the message
-	 */
-	public String getMessage() {return message;}
-	/**
-	 * @return the date
-	 */
+	public void setPin(String pin) {
+		this.pin = pin;
+	}
 
-	public String setMessage(String message) {return this.message = message;}
-	/**
-	 * @return the file
-	 */
-	public File getFile() {return file;}
-	/**
-	 * @param file the file to set
-	 */
-	public File setFile(File file) {return this.file = file;}
-	/**
-	 * @return the pin
-	 */
-	public String getPin() {return pin;}
-	/**
-	 * @param pin the pin to set
-	 */
-	public void setPin(String pin) {this.pin = pin;}
-	/**
-	 * @return the networkID
-	 */
-	public String getNetworkID() {return networkID;}
-	/**
-	 * @param networkID the networkID to set
-	 */
-	public void setNetworkID(String networkID) {this.networkID = networkID;}
-	/**
-	 * @return the connection
-	 */
-	public String getConnection() {return Connection;}
-	/**
-	 * @param connection the connection to set
-	 */
-	public void setConnection(String connection) {Connection = connection;}
-	/**
-	 * @return the userName
-	 */
-	public String getUserName() {return userName;}
-	/**
-	 * @param userName the userName to set
-	 */
-	public void setUserName(String userName) {this.userName = userName;}
-	/**
-	 * @return the filePath
-	 */
-	public String getFilePath() {return filePath;}
-	/**
-	 * @param filePath the filePath to set
-	 */
-	public String setFilePath(String filePath) {return this.filePath = filePath;}
-	/**
-	 * @return the node
-	 */
-	public Node getNode() {return node;}
-	/**
-	 * @param node the node to set
-	 */
-	public void setNode(Node node) {this.node = node;}
-	/**
-	 * @return the port
-	 */
-	public int getPort() {return port;}
-	/**
-	 * @param port the port to set
-	 */
-	public void setPort(int port) {this.port = port;}
+	public File getFile() {
+		return file;
+	}
 
+	public void setFile(File file) {
+		this.file = file;
+	}
 
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String getTo() {
+		return to;
+	}
+
+	public void setTo(String to) {
+		this.to = to;
+	}
+
+	public Message getMessage() {
+		return message;
+	}
+
+	public void setMessage(Message message) {
+		this.message = message;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Transaction that = (Transaction) o;
+		return Objects.equals(date, that.date) && Objects.equals(from, that.from) && Objects.equals(to, that.to) && Objects.equals(pin, that.pin) && Objects.equals(message, that.message) && Objects.equals(file, that.file);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(date, from, to, pin, message, file);
+	}
 }

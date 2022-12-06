@@ -8,6 +8,7 @@ public class FumeappapiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(FumeappapiApplication.class, args);
+
     }
 
 }
