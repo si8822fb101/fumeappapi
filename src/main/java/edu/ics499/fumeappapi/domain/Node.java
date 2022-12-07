@@ -19,6 +19,7 @@ import java.net.UnknownHostException;
  * 
  */
 public class Node implements Serializable {
+	private static final long serialVersionUID = 0L;
 	private String macAddress, ipAddress; 
 
 	/**

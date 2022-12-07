@@ -150,7 +150,7 @@ public class NodeListService {
             localPeer.start(
                     discoveredPeer -> onPeerDiscovery(discoveredPeer),
                     removedPeer -> onPeerRemoval(removedPeer),
-                    (peer, incomingConnection) -> System.out.println("Received incoming connection: "+incomingConnection+" from peer: "+peer)
+                    (peer, incomingConnection) -> onPeerConnection(peer, incomingConnection)
             );
 //            if(discoveryClient == null){
 //                discoveryClient = new Peer.Builder()
@@ -182,20 +182,51 @@ public class NodeListService {
             out.writeObject(head);
             out.flush();
             connection.send(ByteBuffer.wrap(bos.toByteArray()));
-            connection.setOnData((conn, data) -> {
-                System.out.println("Received Data from peer on connection: " + connection);
+//            connection.setOnData((conn, data) -> {
+//                System.out.println("Received Data from peer on connection: " + connection);
+//                ByteArrayInputStream bis = new ByteArrayInputStream(data.array());
+//                ObjectInput in = null;
+//                try {
+//                    in = new ObjectInputStream(bis);
+//                    User user =  (User) in.readObject();
+//                    ledger.add(user);
+//                } catch (IOException | ClassNotFoundException e) {
+//                    e.printStackTrace();
+//                    connection.close();
+//                }
+//            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void onPeerConnection(RemotePeer peer, Connection incomingConnection){
+        try {
+            System.out.println("Received incoming connection: "+incomingConnection+" from peer: "+peer);
+            incomingConnection.setOnClose(conn -> System.out.println("Connection closed."));
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = null;
+            out = new ObjectOutputStream(bos);
+            out.writeObject(head);
+            out.flush();
+            incomingConnection.send(ByteBuffer.wrap(bos.toByteArray()));
+            incomingConnection.setOnData((conn, data) -> {
                 ByteArrayInputStream bis = new ByteArrayInputStream(data.array());
                 ObjectInput in = null;
                 try {
                     in = new ObjectInputStream(bis);
                     User user =  (User) in.readObject();
+                    System.out.println("Received Data from peer on connection: " + user);
                     ledger.add(user);
+                    incomingConnection.close();
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
+                    incomingConnection.close();
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
+            incomingConnection.close();
         }
     }
 
