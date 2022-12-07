@@ -65,7 +65,7 @@ public class User extends Node{
 	 * @param userCreationDate the userCreationDate to set
 	 */
 	public void setUserCreateDate(Calendar userCreationDate) {this.userCreateDate = userCreationDate;}
-	
+
 	/**
 	 * 
 	 * @param - userName
@@ -80,6 +80,16 @@ public class User extends Node{
 		if(userObject == null || getClass() != userObject.getClass()) return false;
 		User user = (User) userObject;
 		return getUserName().equalsIgnoreCase(user.getUserName());
+	}
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"userName='" + userName + '\'' +
+				", pin='" + pin + '\'' +
+				", userCreateDate=" + userCreateDate +
+				", active=" + active +
+				'}';
 	}
 
 }
