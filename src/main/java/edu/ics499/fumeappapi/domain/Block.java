@@ -4,21 +4,32 @@ import java.util.Calendar;
 
 public class Block {
     private Integer hash;
-    private static Block top, left, right;
-    private static Calendar time;
+    private Block top, left, right;
+    private Block next;
+    private Calendar time;
+    private Transaction transaction;
+    private int currenHeight;
+    private static int height;
 
-    /**
-     * @param hash
-     * @param time
-     */
     public Block() {
         this.setTop(top);
         this.hash = hash.hashCode();
         this.setTemporal(Calendar.getInstance());
+        height = 1;
+        currenHeight = height;
     }
+
+    public Block(Block next, Object hash) {
+        height++;
+        currenHeight = height;
+        setNext(next);
+        this.hash = hash.hashCode();
+        this.setTemporal(Calendar.getInstance());
+    }
+
     public Block(Block left, Block right, Object hash) {
-        Block.setLeft(left);
-        Block.setRight(right);
+        setLeft(left);
+        setRight(right);
         this.hash = hash.hashCode();
         this.setTemporal(Calendar.getInstance());
     }
@@ -26,6 +37,15 @@ public class Block {
      * @return the hash
      */
     public Integer getHash() {return hash;}
+
+    public Block getNext() {
+        return next;
+    }
+
+    public void setNext(Block next) {
+        this.next = next;
+    }
+
     /**
      * @return the top
      */
@@ -33,30 +53,45 @@ public class Block {
     /**
      * @param top the top to set
      */
-    public void setTop(Block top) {Block.top = top;}
-    /**
-     * @return the left
-     */
-    public static Block getLeft() {return left;}
-    /**
-     * @param left the left to set
-     */
-    public static void setLeft(Block left) {Block.left = left;}
-    /**
-     * @return the right
-     */
-    public static Block getRight() {return right;}
-    /**
-     * @param right the right to set
-     */
-    public static void setRight(Block right) {Block.right = right;}
-    /**
-     * @return the temporal
-     */
-    public Calendar getTemporal() {return time;}
-    /**
-     * @param temporal the temporal to set
-     */
-    public void setTemporal(Calendar temporal) {Block.time = temporal;}
+    public void setTop(Block top) {this.top = top;}
 
+    public Block getLeft() {
+        return left;
+    }
+
+    public void setLeft(Block left) {
+        this.left = left;
+    }
+
+    public Block getRight() {
+        return right;
+    }
+
+    public void setRight(Block right) {
+        this.right = right;
+    }
+
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
+    }
+
+    public Calendar getTemporal() {
+        return time;
+    }
+
+    public void setTemporal(Calendar time) {
+        this.time = time;
+    }
+
+    public int getCurrenHeight() {
+        return currenHeight;
+    }
+
+    public void setCurrenHeight(int currenHeight) {
+        this.currenHeight = currenHeight;
+    }
 }

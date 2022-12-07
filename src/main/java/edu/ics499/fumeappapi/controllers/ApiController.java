@@ -4,7 +4,11 @@ import edu.ics499.fumeappapi.domain.Node;
 import edu.ics499.fumeappapi.requests.LoginForm;
 import edu.ics499.fumeappapi.requests.LogoutForm;
 import edu.ics499.fumeappapi.services.TransactionService;
+//import org.jobrunr.jobs.mappers.JobMapper;
+//import org.jobrunr.storage.InMemoryStorageProvider;
+//import org.jobrunr.storage.StorageProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +21,6 @@ public class ApiController {
 
     @Autowired
     private TransactionService transactionService;
-
-    @RequestMapping("/test")
-    public String test(){
-        return "Hello";
-    }
 
     @PostMapping("/registerUser")
     @ResponseBody
@@ -68,4 +67,5 @@ public class ApiController {
                     HttpStatus.INTERNAL_SERVER_ERROR, "Login failed with error", e);
         }
     }
+
 }

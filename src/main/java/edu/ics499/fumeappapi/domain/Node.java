@@ -5,6 +5,7 @@ package edu.ics499.fumeappapi.domain;
  */
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -17,7 +18,7 @@ import java.net.UnknownHostException;
  * NODE - Represents a user/device on the network
  * 
  */
-public class Node{
+public class Node implements Serializable {
 	private String macAddress, ipAddress; 
 
 	/**
