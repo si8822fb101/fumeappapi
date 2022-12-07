@@ -102,7 +102,7 @@ public class TransactionService {
 
     public void sendMessage(SendMessageForm form) throws IOException {
         Message dataToSend = new Message(form.getFromUsername(), form.getToUsername());
-        if (form.getFilePath() != null) dataToSend.setFilepath(form.getFilePath());
+        if (!form.getFilePath().equals("")) dataToSend.setFilepath(form.getFilePath());
         dataToSend.setContent(form.getContent());
         if(form.getToUsername() != null || port != 0)
             nodeListService.p2pMessageSend(dataToSend, port);

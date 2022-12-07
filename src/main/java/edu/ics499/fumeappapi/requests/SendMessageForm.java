@@ -1,7 +1,13 @@
 package edu.ics499.fumeappapi.requests;
 
+import reactor.util.annotation.Nullable;
+
 public class SendMessageForm {
-    private String fromUsername, toUsername, content, filePath;
+    private String fromUsername;
+    private String toUsername;
+    private String content;
+    @Nullable
+    private String filePath;
 
     public String getFromUsername() {
         return fromUsername;

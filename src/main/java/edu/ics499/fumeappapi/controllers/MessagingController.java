@@ -35,7 +35,7 @@ public class MessagingController {
         }
     }
 
-    @PostMapping("/receive")
+    @GetMapping("/receive")
     @ResponseBody
     public ArrayList<Message> receiveMessages(){
         try{
