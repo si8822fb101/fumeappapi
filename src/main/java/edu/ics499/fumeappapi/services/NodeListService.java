@@ -1,5 +1,6 @@
 package edu.ics499.fumeappapi.services;
 
+import com.sun.tools.jconsole.JConsoleContext;
 import com.theisenp.harbor.Harbor;
 import com.theisenp.harbor.Peer;
 import de.tum.in.www1.jReto.Connection;
@@ -166,6 +167,8 @@ public class NodeListService {
     public void closeDiscovery(){
         if (localPeer != null){
             localPeer.stop();
+            localPeer = null;
+            wlanModule = null;
         }
     }
 
@@ -180,15 +183,16 @@ public class NodeListService {
             out.flush();
             connection.send(ByteBuffer.wrap(bos.toByteArray()));
             connection.setOnData((conn, data) -> {
-            ByteArrayInputStream bis = new ByteArrayInputStream(data.array());
-            ObjectInput in = null;
-            try {
-                in = new ObjectInputStream(bis);
-                User user =  (User) in.readObject();
-                ledger.add(user);
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+                System.out.println("Received Data from peer on connection: " + connection);
+                ByteArrayInputStream bis = new ByteArrayInputStream(data.array());
+                ObjectInput in = null;
+                try {
+                    in = new ObjectInputStream(bis);
+                    User user =  (User) in.readObject();
+                    ledger.add(user);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,6 +200,7 @@ public class NodeListService {
     }
 
     private void onPeerRemoval(RemotePeer removedPeer){
+        System.out.println(removedPeer + " was removed");
     }
 
     private void startDiscoveryServer(){
