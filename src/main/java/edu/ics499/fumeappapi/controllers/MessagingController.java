@@ -2,6 +2,7 @@ package edu.ics499.fumeappapi.controllers;
 
 import edu.ics499.fumeappapi.domain.Message;
 import edu.ics499.fumeappapi.domain.Node;
+import edu.ics499.fumeappapi.requests.NewChatForm;
 import edu.ics499.fumeappapi.requests.RecieveMessageForm;
 import edu.ics499.fumeappapi.requests.SendMessageForm;
 import edu.ics499.fumeappapi.services.TransactionService;
@@ -36,9 +37,19 @@ public class MessagingController {
 
     @PostMapping("/receive")
     @ResponseBody
-    public ArrayList<Message> receiveMessages(@RequestBody RecieveMessageForm form){
+    public ArrayList<Message> receiveMessages(){
         try{
-            return transactionService.receiveMessages(form);
+            return transactionService.receiveMessages();
+        }catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/newChat")
+    @ResponseBody
+    public boolean receiveMessages(@RequestBody NewChatForm form){
+        try{
+            return transactionService.newChat(form);
         }catch(Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

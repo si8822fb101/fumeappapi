@@ -12,7 +12,14 @@ public class Message  implements Serializable {
 	private String fromUsername;
 	private String toUsername;
 	private String content;
+	private String filepath;
 	private Calendar timeStamp;
+
+	public Message(String fromUsername, String toUsername){
+		this.fromUsername = fromUsername;
+		this.toUsername = toUsername;
+		this.timeStamp = Calendar.getInstance();
+	}
 
 	public String getFromUsername() {
 		return fromUsername;
@@ -46,12 +53,11 @@ public class Message  implements Serializable {
 		this.timeStamp = timeStamp;
 	}
 
-	public Message(String fromUsername, String toUsername, String content){
-		this.fromUsername = fromUsername;
-		this.toUsername = toUsername;
-		this.content = content;
-		this.timeStamp = Calendar.getInstance();
+	public String getFilepath() {
+		return filepath;
 	}
 
-
+	public void setFilepath(String filepath) {
+		this.filepath = filepath;
+	}
 }

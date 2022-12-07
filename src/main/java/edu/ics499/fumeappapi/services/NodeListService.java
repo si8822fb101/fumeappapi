@@ -2,6 +2,10 @@ package edu.ics499.fumeappapi.services;
 
 import com.theisenp.harbor.Harbor;
 import com.theisenp.harbor.Peer;
+import de.tum.in.www1.jReto.Connection;
+import de.tum.in.www1.jReto.LocalPeer;
+import de.tum.in.www1.jReto.RemotePeer;
+import de.tum.in.www1.jReto.module.wlan.WlanModule;
 import edu.ics499.fumeappapi.domain.*;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +16,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.rmi.Remote;
+import java.util.*;
+import java.util.concurrent.Executors;
 
 @Service
 public class NodeListService {
@@ -25,10 +32,12 @@ public class NodeListService {
     private int count;
     private static Harbor discoveryServer;
     private static Peer discoveryClient;
+    private static String filePath;
     private Block headBlock;
     @Value("${port}")
     private int port;
-
+    private static WlanModule wlanModule;
+    private static LocalPeer localPeer;
     /**
      * @return the count
      */
@@ -57,6 +66,7 @@ public class NodeListService {
 
     public boolean setCurrentDevice(User device) {
         head = device;
+        filePath = System.getProperty("user.dir") + "\\" + head.getUserName();
         return true;
     }
 
@@ -92,9 +102,11 @@ public class NodeListService {
                 transaction.setFrom(head.getUserName());
                 transaction.setTo(message.getToUsername());
                 transaction.setMessage(message);
+                if (message.getFilepath() != null) transaction.setFile(new File(message.getFilepath()));
                 headBlock = new Block(headBlock, Hash.hashCreation(headBlock.hashCode() + transaction.hashCode()));
                 headBlock.setTransaction(transaction);
             }
+            getUpdatedBlockChain();
         }
     }
 
@@ -128,16 +140,62 @@ public class NodeListService {
         ledger.clear();
     }
 
-    private void startDiscoveryClient(String username){
-        if(discoveryClient == null){
-            discoveryClient = new Peer.Builder()
-                    .id(UUID.randomUUID().toString())
-                    .type("example")
-                    .status(Peer.Status.ACTIVE)
-                    .description(username)
-                    .protocol("TCP", "192.168.0.1:5555")
-                    .build();
+    public void startDiscoveryClient(String username) throws IOException {
+
+        if(wlanModule == null){
+            wlanModule = new WlanModule("FumeApp");
+            localPeer = new LocalPeer(Arrays.asList(wlanModule), Executors.newSingleThreadExecutor());
+            // 3. Starting the LocalPeer
+            localPeer.start(
+                    discoveredPeer -> onPeerDiscovery(discoveredPeer),
+                    removedPeer -> onPeerRemoval(removedPeer),
+                    (peer, incomingConnection) -> System.out.println("Received incoming connection: "+incomingConnection+" from peer: "+peer)
+            );
+//            if(discoveryClient == null){
+//                discoveryClient = new Peer.Builder()
+//                        .id(UUID.randomUUID().toString())
+//                        .type("example")
+//                        .status(Peer.Status.ACTIVE)
+//                        .description(username)
+//                        .protocol("TCP", "192.168.0.1:5555")
+//                        .build();
+//            }
         }
+    }
+
+    public void closeDiscovery(){
+        if (localPeer != null){
+            localPeer.stop();
+        }
+    }
+
+    private void onPeerDiscovery(RemotePeer discoveredPeer){
+        try {
+            Connection connection = discoveredPeer.connect();
+            connection.setOnClose(conn -> System.out.println("Connection closed."));
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = null;
+            out = new ObjectOutputStream(bos);
+            out.writeObject(head);
+            out.flush();
+            connection.send(ByteBuffer.wrap(bos.toByteArray()));
+            connection.setOnData((conn, data) -> {
+            ByteArrayInputStream bis = new ByteArrayInputStream(data.array());
+            ObjectInput in = null;
+            try {
+                in = new ObjectInputStream(bis);
+                User user =  (User) in.readObject();
+                ledger.add(user);
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void onPeerRemoval(RemotePeer removedPeer){
     }
 
     private void startDiscoveryServer(){
@@ -189,14 +247,16 @@ public class NodeListService {
         }
     }
 
-    public void runDiscovery(String username){
-        this.startDiscoveryClient(username);
-        this.startDiscoveryServer();
-    }
+//    public void runDiscovery(String username){
+//        this.startDiscoveryClient(username);
+//        this.startDiscoveryServer();
+//    }
 
-    public void closeDiscovery(){
-        this.discoveryServer.close();
-    }
+//    public void closeDiscovery(){
+//        discoveryServer.close();
+//        discoveryServer = null;
+//        discoveryClient = null;
+//    }
 
     public void getUpdatedBlockChain
             (){
@@ -232,13 +292,23 @@ public class NodeListService {
         }
     }
 
-    public ArrayList<Message> getMessages(String fromUsername, String toUsername){
+    public ArrayList<Message> getMessages(){
         ArrayList<Message> list = new ArrayList<Message>();
         Block current = headBlock;
         while (current != null){
             Message message = current.getTransaction().getMessage();
-            if(message.getFromUsername().equals(fromUsername) && message.getToUsername().equals(toUsername)){
-                list.add(current.getTransaction().getMessage());
+            if(message.getFromUsername().equals(head.getUserName()) || message.getToUsername().equals(head.getUserName())){
+                if (current.getTransaction().getFile() != null){
+                    try {
+                        File inputFile = current.getTransaction().getFile();
+                        File outputFile = new File(filePath + "/" + inputFile.getName());
+                        Files.copy(inputFile.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        message.setFilepath(outputFile.getAbsolutePath());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                list.add(message);
             }
             current = current.getNext();
         }

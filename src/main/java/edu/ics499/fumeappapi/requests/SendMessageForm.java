@@ -1,7 +1,7 @@
 package edu.ics499.fumeappapi.requests;
 
 public class SendMessageForm {
-    private String fromUsername, toUsername, message;
+    private String fromUsername, toUsername, content, filePath;
 
     public String getFromUsername() {
         return fromUsername;
@@ -19,11 +19,19 @@ public class SendMessageForm {
         this.toUsername = toUsername;
     }
 
-    public String getMessage() {
-        return message;
+    public String getContent() {
+        return content;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

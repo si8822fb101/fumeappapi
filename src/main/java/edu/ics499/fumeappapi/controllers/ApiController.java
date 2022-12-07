@@ -22,11 +22,6 @@ public class ApiController {
     @Autowired
     private TransactionService transactionService;
 
-    @RequestMapping("/test")
-    public String test(){
-        return "Hello";
-    }
-
     @PostMapping("/registerUser")
     @ResponseBody
     public Node registerUser(@RequestBody LoginForm loginForm){
