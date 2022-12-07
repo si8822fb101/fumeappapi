@@ -8,26 +8,19 @@ import de.tum.in.www1.jReto.RemotePeer;
 import de.tum.in.www1.jReto.module.wlan.WlanModule;
 import edu.ics499.fumeappapi.domain.*;
 import org.joda.time.Duration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.rmi.Remote;
 import java.util.*;
 import java.util.concurrent.Executors;
 
 @Service
 public class NodeListService {
-    private List <User> ledger = new ArrayList<User>();
+    private final List <User> ledger = new ArrayList<User>();
     private User head;
     private int count;
     private static Harbor discoveryServer;
@@ -109,6 +102,7 @@ public class NodeListService {
             getUpdatedBlockChain();
         }
     }
+
 
 //    public void consensus(String destination, String data) {
 //        double threshold = 0.95;
@@ -260,9 +254,8 @@ public class NodeListService {
 
     public void getUpdatedBlockChain
             (){
-        for(Iterator<User> iterator = ledger.iterator(); iterator.hasNext();) {
-            User user = iterator.next();
-            try{
+        for (User user : ledger) {
+            try {
                 WebClient client = WebClient.create("http://" + user.getIpAddress() + ":" + port);
                 Block result = client.post().uri("/peer/syncBlockChain")
                         .body(headBlock, Block.class)
@@ -270,7 +263,7 @@ public class NodeListService {
                         .bodyToMono(Block.class).block();
                 syncBlockchain(result);
                 System.out.println(result);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
