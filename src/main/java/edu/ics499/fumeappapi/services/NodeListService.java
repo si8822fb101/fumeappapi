@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 
 @Service
 public class NodeListService {
-    private final List <User> ledger = new ArrayList<User>();
+    private static List <User> ledger;
     private User head;
     private int count;
     private static Harbor discoveryServer;
@@ -59,6 +59,7 @@ public class NodeListService {
     }
 
     public boolean setCurrentDevice(User device) {
+        ledger = new ArrayList<User>();
         head = device;
         filePath = System.getProperty("user.dir") + "\\" + head.getUserName();
         return true;
@@ -89,6 +90,7 @@ public class NodeListService {
     }
 
     public void p2pMessageSend(Message message, int portValue) throws IOException {
+        System.out.println(message);
         for(Iterator<User> iterator = ledger.iterator(); iterator.hasNext();) {
             User user = iterator.next();
             if(user.getUserName().equals(message.getToUsername())) {
@@ -96,12 +98,12 @@ public class NodeListService {
                 transaction.setFrom(head.getUserName());
                 transaction.setTo(message.getToUsername());
                 transaction.setMessage(message);
-                if (message.getFilepath() != null) transaction.setFile(new File(message.getFilepath()));
+                if (!message.getFilepath().equals("")) transaction.setFile(new File(message.getFilepath()));
                 headBlock = new Block(headBlock, Hash.hashCreation(headBlock.hashCode() + transaction.hashCode()));
                 headBlock.setTransaction(transaction);
             }
-            getUpdatedBlockChain();
         }
+        getUpdatedBlockChain();
     }
 
 
@@ -168,6 +170,7 @@ public class NodeListService {
 
     private void onPeerDiscovery(RemotePeer discoveredPeer){
         try {
+            System.out.println("Sending data to remote peer: "+discoveredPeer+" from peer: "+discoveredPeer);
             Connection connection = discoveredPeer.connect();
             connection.setOnClose(conn -> System.out.println("Connection closed."));
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -176,19 +179,19 @@ public class NodeListService {
             out.writeObject(head);
             out.flush();
             connection.send(ByteBuffer.wrap(bos.toByteArray()));
-//            connection.setOnData((conn, data) -> {
-//                System.out.println("Received Data from peer on connection: " + connection);
-//                ByteArrayInputStream bis = new ByteArrayInputStream(data.array());
-//                ObjectInput in = null;
-//                try {
-//                    in = new ObjectInputStream(bis);
-//                    User user =  (User) in.readObject();
-//                    ledger.add(user);
-//                } catch (IOException | ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                    connection.close();
-//                }
-//            });
+            connection.setOnData((conn, data) -> {
+                ByteArrayInputStream bis = new ByteArrayInputStream(data.array());
+                ObjectInput in = null;
+                try {
+                    in = new ObjectInputStream(bis);
+                    User user =  (User) in.readObject();
+                    ledger.add(user);
+                    System.out.println("Received Data from peer on connection: " + user);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                    connection.close();
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
